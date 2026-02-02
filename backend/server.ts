@@ -12,10 +12,24 @@ const PORT = process.env.PORT || 3001;
 const DATA_DIR = path.resolve('data');
 const UPLOADS_DIR = path.join(DATA_DIR, 'uploads');
 const DB_PATH = process.env.DB_PATH || path.join(DATA_DIR, 'inventory.db');
+const RESET_DB = process.env.RESET_DB === 'true' || process.env.RESET_DB === '1';
 
 // Ensure directories exist
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+
+if (RESET_DB) {
+    if (fs.existsSync(DB_PATH)) {
+        try { fs.unlinkSync(DB_PATH); } catch (e) { }
+    }
+
+    if (fs.existsSync(UPLOADS_DIR)) {
+        for (const file of fs.readdirSync(UPLOADS_DIR)) {
+            const filePath = path.join(UPLOADS_DIR, file);
+            try { fs.unlinkSync(filePath); } catch (e) { }
+        }
+    }
+}
 
 // Multer Configuration for Image Uploads
 const storage = multer.diskStorage({

@@ -6,13 +6,14 @@ import { Edit2, Trash2, Search, AlertTriangle, Plus, Minus, ImageOff, Filter, Ch
 
 interface ProductListProps {
   products?: Product[]; // Optional now as we fetch internally for pagination
+  refreshKey?: number;
   onEdit: (product: Product) => void;
   onDelete: (id: number) => void;
   onStockIn: (product: Product) => void;
   onStockOut: (product: Product) => void;
 }
 
-const ProductList: React.FC<ProductListProps> = ({ onEdit, onDelete, onStockIn, onStockOut }) => {
+const ProductList: React.FC<ProductListProps> = ({ refreshKey, onEdit, onDelete, onStockIn, onStockOut }) => {
   const [productsData, setProductsData] = useState<PaginatedResponse<Product> | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,11 +46,11 @@ const ProductList: React.FC<ProductListProps> = ({ onEdit, onDelete, onStockIn, 
         } catch (e) {}
     };
     loadCats();
-  }, []);
+  }, [refreshKey]);
 
   useEffect(() => {
     fetchProducts();
-  }, [page, search, selectedCategory, lowStockFilter]);
+  }, [page, search, selectedCategory, lowStockFilter, refreshKey]);
 
   // Debounce search
   useEffect(() => {

@@ -19,6 +19,7 @@ const MainContent = () => {
   const [currentView, setCurrentView] = useState<ViewMode>(ViewMode.DASHBOARD);
   const [productsForDashboard, setProductsForDashboard] = useState<Product[]>([]);
   const [needsInstall, setNeedsInstall] = useState<boolean | null>(null); // null = checking
+  const [dataVersion, setDataVersion] = useState(0);
   
   // Form State
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -34,6 +35,10 @@ const MainContent = () => {
   const [stockSubmitting, setStockSubmitting] = useState(false);
 
   const { addToast } = useToast();
+
+  const bumpDataVersion = useCallback(() => {
+    setDataVersion((v) => v + 1);
+  }, []);
 
   // Check system status on mount
   useEffect(() => {
@@ -66,7 +71,7 @@ const MainContent = () => {
     if (currentView === ViewMode.DASHBOARD) {
        loadDashboardData();
     }
-  }, [loadDashboardData, currentView]);
+  }, [loadDashboardData, currentView, dataVersion]);
 
   const handleCreate = async (data: ProductFormData) => {
     setFormSubmitting(true);
@@ -74,6 +79,7 @@ const MainContent = () => {
       await api.createProduct(data);
       addToast('Produto criado com sucesso!', 'success');
       setIsFormOpen(false);
+      bumpDataVersion();
       loadDashboardData(); // Refresh dashboard stats
     } catch (error) {
       addToast('Erro ao criar produto', 'error');
@@ -90,6 +96,7 @@ const MainContent = () => {
       addToast('Produto atualizado!', 'success');
       setIsFormOpen(false);
       setEditingProduct(undefined);
+      bumpDataVersion();
       loadDashboardData();
     } catch (error) {
       addToast('Erro ao atualizar produto', 'error');
@@ -109,6 +116,7 @@ const MainContent = () => {
       await api.deleteProduct(productToDelete);
       addToast('Produto excluído!', 'success');
       setProductToDelete(null);
+      bumpDataVersion();
       loadDashboardData();
     } catch (error) {
       addToast('Erro ao excluir produto', 'error');
@@ -124,6 +132,7 @@ const MainContent = () => {
       await api.registerMovement(stockModalData.product.id, stockModalData.type, quantity, reason);
       addToast('Movimentação registrada!', 'success');
       setStockModalData(null);
+      bumpDataVersion();
       loadDashboardData();
     } catch (error: any) {
       addToast(error.message || 'Erro ao registrar movimentação', 'error');
@@ -144,6 +153,7 @@ const MainContent = () => {
 
   const handleInstallComplete = () => {
     setNeedsInstall(false);
+    bumpDataVersion();
     loadDashboardData();
     addToast('Sistema iniciado e pronto para uso!', 'success');
   };
@@ -190,6 +200,7 @@ const MainContent = () => {
           
           {currentView === ViewMode.LIST && (
             <ProductList
+              refreshKey={dataVersion}
               onEdit={openEditProductForm}
               onDelete={onRequestDelete}
               onStockIn={(p) => setStockModalData({ product: p, type: 'IN' })}
@@ -197,7 +208,9 @@ const MainContent = () => {
             />
           )}
 
-          {currentView === ViewMode.CATEGORIES && <CategoryList />}
+          {currentView === ViewMode.CATEGORIES && (
+            <CategoryList onDataChange={bumpDataVersion} />
+          )}
 
           {currentView === ViewMode.REPORTS && <Reports />}
         </div>

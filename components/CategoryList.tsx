@@ -4,7 +4,11 @@ import { api } from '../services/api';
 import { useToast } from './ToastNotification';
 import { Trash2, Plus, Tag } from 'lucide-react';
 
-const CategoryList: React.FC = () => {
+interface CategoryListProps {
+  onDataChange?: () => void;
+}
+
+const CategoryList: React.FC<CategoryListProps> = ({ onDataChange }) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [loading, setLoading] = useState(false);
@@ -33,6 +37,7 @@ const CategoryList: React.FC = () => {
       addToast('Categoria adicionada!', 'success');
       setNewCategoryName('');
       loadCategories();
+      onDataChange?.();
     } catch (error) {
       addToast('Erro ao criar categoria', 'error');
     } finally {
@@ -46,6 +51,7 @@ const CategoryList: React.FC = () => {
       await api.deleteCategory(id);
       addToast('Categoria removida!', 'success');
       loadCategories();
+      onDataChange?.();
     } catch (error: any) {
       addToast(error.message, 'error');
     }
