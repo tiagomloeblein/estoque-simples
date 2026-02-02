@@ -3,15 +3,13 @@ import cors from 'cors';
 import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import multer from 'multer';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const DATA_DIR = path.join(__dirname, 'data');
+
+// Define diretórios baseados no diretório de trabalho atual (WORKDIR do Docker ou raiz local)
+const DATA_DIR = path.resolve('data');
 const UPLOADS_DIR = path.join(DATA_DIR, 'uploads');
 const DB_PATH = process.env.DB_PATH || path.join(DATA_DIR, 'inventory.db');
 
