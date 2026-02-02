@@ -6,21 +6,26 @@ services:
     working_dir: /app
     volumes:
       - .:/app
+      - /app/node_modules
     ports:
       - "3000:3000"
     environment:
       - VITE_API_TARGET=http://backend:3001
+      - CHOKIDAR_USEPOLLING=true
     command: sh -c "npm install && npm run dev"
     depends_on:
       - backend
 
   backend:
-    build: ./backend
+    image: node:18-alpine
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
     ports:
       - "3001:3001"
-    volumes:
-      - ./backend/data:/app/data
     environment:
       - PORT=3001
       - DB_PATH=/app/data/inventory.db
+    command: sh -c "npm install && npm start"
     restart: unless-stopped

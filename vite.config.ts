@@ -4,10 +4,18 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: true,
+    host: true, // Necessário para Docker (bind 0.0.0.0)
+    strictPort: true,
     port: 3000,
+    watch: {
+      usePolling: true, // Necessário para hot-reload em alguns sistemas de arquivo Docker
+    },
     proxy: {
       '/api': {
+        target: process.env.VITE_API_TARGET || 'http://localhost:3001',
+        changeOrigin: true,
+      },
+      '/uploads': {
         target: process.env.VITE_API_TARGET || 'http://localhost:3001',
         changeOrigin: true,
       }

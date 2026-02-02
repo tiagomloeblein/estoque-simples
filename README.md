@@ -9,9 +9,6 @@ Este projeto é um exemplo de **Vibecoding** — uma abordagem de desenvolviment
 **Estado Atual:**
 O sistema entrega as **funcionalidades básicas** essenciais para um MVP (Produto Mínimo Viável) de gestão de estoque.
 
-📢 **Quer ver este projeto evoluir?**
-Se você gostaria de ver este sistema aprimorado com recursos avançados (como autenticação de usuários, exportação de relatórios em PDF, leitura de código de barras, etc.), **deixe seu comentário e uma estrela no repositório!** O feedback da comunidade definirá as próximas atualizações.
-
 ---
 
 ## 🚀 Funcionalidades
@@ -20,79 +17,66 @@ Se você gostaria de ver este sistema aprimorado com recursos avançados (como a
 - **Gestão de Produtos**: Adicionar, Editar e Excluir produtos.
 - **Entrada e Saída**: Controle rápido de movimentações de estoque.
 - **Relatórios**: Histórico detalhado de todas as movimentações.
-- **Categorização**: Organização por categorias (Eletrônicos, Móveis, etc).
-- **Alertas de Estoque**: Indicadores visuais automáticos para produtos com estoque baixo.
-- **Persistência de Dados**: Banco de dados SQLite robusto e leve.
+- **Persistência de Dados**: Banco de dados SQLite salvo localmente na pasta `backend/data`.
+- **Arquitetura Simplificada**: Todo o ambiente roda via Docker Compose sem necessidade de builds complexos.
 
 ## 🛠️ Tecnologias Utilizadas
 
 - **Frontend**: React, Tailwind CSS, Recharts, Lucide Icons, Vite.
 - **Backend**: Node.js, Express.
 - **Banco de Dados**: SQLite (via `better-sqlite3`).
-- **Infraestrutura**: Docker e Docker Compose.
+- **Infraestrutura**: Docker Compose (Imagens Node.js Alpine).
 
 ---
 
-## 📦 Instalação e Uso (Para Usuários Não-Técnicos)
+## 📦 Instalação e Uso (Docker)
 
-A maneira mais fácil de rodar o Estoque Simples é utilizando o **Docker**. Isso garante que tudo funcione sem precisar instalar várias ferramentas no seu computador.
+A maneira recomendada de rodar o sistema é utilizando o **Docker Compose**. O arquivo `docker-compose.yml` já contém todas as definições necessárias.
 
 ### Pré-requisitos
-1. Baixe e instale o **Docker Desktop** no seu computador (Windows, Mac ou Linux).
-   - [Download Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- **Docker Desktop** instalado.
 
 ### Passo a Passo
 
-1. **Baixe o código**: Faça o download deste projeto e extraia a pasta no seu computador.
-2. **Abra o Terminal**:
-   - No Windows: Abra a pasta do projeto, clique com o botão direito e selecione "Abrir no Terminal" (ou use o PowerShell).
-   - No Mac/Linux: Abra o Terminal e navegue até a pasta do projeto (`cd caminho/da/pasta`).
-3. **Inicie o Sistema**: Digite o seguinte comando e aperte Enter:
+1. **Inicie o Sistema**:
+   Abra o terminal na pasta raiz do projeto e execute:
    ```bash
    docker-compose up
    ```
-   *A primeira vez pode levar alguns minutos pois o sistema irá baixar e configurar tudo automaticamente.*
+   *Nota: Na primeira execução, o Docker irá baixar as imagens do Node.js e instalar as dependências (npm install) automaticamente. Isso pode levar alguns minutos.*
 
-4. **Acesse o Sistema**:
-   - Abra seu navegador (Chrome, Edge, Firefox).
-   - Digite o endereço: **http://localhost:3000**
+2. **Acesse o Sistema**:
+   - Frontend: **http://localhost:3000**
+   - Backend API: **http://localhost:3001**
 
-Pronto! O sistema está rodando. Seus dados serão salvos automaticamente na pasta `backend/data` dentro do projeto.
+### Persistência de Dados
+Os dados do banco de dados (SQLite) e uploads de imagens são salvos na pasta local `./backend/data`. Isso significa que mesmo se você destruir os containers, seus dados permanecerão salvos no seu computador.
 
 ---
 
-## 💻 Instalação Manual (Para Desenvolvedores)
+## 💻 Instalação Manual (Sem Docker)
 
-Se você preferir rodar sem Docker para desenvolvimento:
+Se preferir rodar localmente:
 
 ### Backend
-1. Navegue até a pasta `backend`: `cd backend`
-2. Instale as dependências: `npm install`
-3. Inicie o servidor: `npm start`
-   - O servidor rodará em `http://localhost:3001`.
+1. Entre na pasta: `cd backend`
+2. Instale: `npm install`
+3. Rode: `npm start`
 
 ### Frontend
-1. Na raiz do projeto: `cd ..`
-2. Instale as dependências: `npm install`
-3. Inicie o Vite: `npm run dev`
-4. Acesse `http://localhost:3000` (ou a porta indicada pelo Vite).
+1. Na raiz do projeto: `npm install`
+2. Rode: `npm run dev`
+
+---
 
 ## 📂 Estrutura do Projeto
 
 ```
 /
-├── backend/            # API Node.js e Banco de Dados
-│   ├── data/           # Arquivo do SQLite (gerado automaticamente)
-│   ├── server.ts       # Código do servidor
-│   └── schema.sql      # Estrutura do banco de dados
-├── components/         # Componentes React (Dashboard, Forms, etc)
-├── services/           # Comunicação com API
-├── types.ts            # Definições de tipos TypeScript
-├── docker-compose.yml  # Configuração dos containers
-└── README.md           # Este arquivo
+├── backend/            # Código do servidor e DB
+│   ├── data/           # Banco de dados SQLite (Persistente)
+│   └── server.ts       # API Express
+├── components/         # Componentes React
+├── docker-compose.yml  # Definição dos Serviços
+└── index.html          # Entrada do Frontend
 ```
-
-## ⚠️ Notas Importantes
-
-- **Dados Persistentes**: O banco de dados SQLite é salvo localmente. Se você deletar a pasta do projeto, pode perder os dados, a menos que faça backup da pasta `backend/data`.
-- **Portas**: O sistema usa as portas `3000` (Frontend) e `3001` (Backend). Certifique-se de que elas não estão sendo usadas por outros programas.
